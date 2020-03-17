@@ -16,7 +16,7 @@ __EOF__
             fi
             if [ $context != lmdb-nodnssec ]
             then
-                if [ $zone != insecure.dnssec-parent.com ]
+                if [ $zone != insecure.dnssec-parent.com && $zone != hiddencryptokeys.org ]
                 then
                     if [ $context = lmdb-nsec3 ]
                     then
@@ -28,7 +28,12 @@ __EOF__
                     then
                         $PDNSUTIL --config-dir=. --config-name=lmdb set-nsec3 $zone '1 1 1 abcd' narrow 2>&1
                     fi
-                    securezone $zone lmdb
+                    if [ $zone != hiddencryptokeys.org ]
+                    then 
+                        securezone $zone lmdb
+                    else
+                        $PDNSUTIL --config-dir=. --config-name=lmdb add-zone-key $zone zsk 384 active unpublished ecdsa384
+                    fi
                     if [ $zone = cryptokeys.org ]
                     then
                         $PDNSUTIL --config-dir=. --config-name=lmdb add-zone-key $zone zsk 384 active unpublished ecdsa384

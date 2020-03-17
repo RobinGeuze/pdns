@@ -24,7 +24,12 @@ gsql_master()
 			then
 				$PDNSUTIL --config-dir=. --config-name=$backend set-nsec3 $zone '1 1 1 abcd' narrow 2>&1
 			fi
-			securezone $zone ${backend}
+            if [ $zone != hiddencryptokeys.org ]
+            then
+    			securezone $zone ${backend}
+            else
+                $PDNSUTIL --config-dir=. --config-name=$backend add-zone-key $zone zsk 384 active unpublished ecdsa384
+            fi
             if [ $zone = cryptokeys.org ]
             then
                 $PDNSUTIL --config-dir=. --config-name=$backend add-zone-key $zone zsk 384 active unpublished ecdsa384
